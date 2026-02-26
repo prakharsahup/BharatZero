@@ -1,16 +1,7 @@
 "use client"
 
-/**
- * Auth module — currently uses localStorage for demo.
- *
- * TO SWITCH TO SUPABASE:
- *  1. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local
- *  2. Replace the localStorage calls in login/register/logout with the
- *     commented-out Supabase equivalents below each block.
- *  3. Remove the localStorage user-store logic entirely.
- */
-
 import { createContext, useContext, useEffect, useState } from "react"
+import { supabase } from "./supabase"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -24,26 +15,8 @@ interface AuthContextType {
   user: User | null
   login: (email: string, password: string) => Promise<{ error?: string }>
   register: (name: string, email: string, password: string) => Promise<{ error?: string }>
+  loginWithGoogle: () => Promise<{ error?: string }>
   logout: () => void
-}
-
-// ─── Helpers (localStorage user store) ───────────────────────────────────────
-
-const USERS_KEY = "bz_users"
-const AUTH_KEY  = "bz_auth"
-const USER_KEY  = "bz_user"
-
-interface StoredUser { name: string; email: string; password: string }
-
-function getStoredUsers(): StoredUser[] {
-  if (typeof window === "undefined") return []
-  try { return JSON.parse(localStorage.getItem(USERS_KEY) || "[]") } catch { return [] }
-}
-
-function saveStoredUser(u: StoredUser) {
-  const users = getStoredUsers()
-  users.push(u)
-  localStorage.setItem(USERS_KEY, JSON.stringify(users))
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -53,6 +26,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   login: async () => ({}),
   register: async () => ({}),
+  loginWithGoogle: async () => ({}),
   logout: () => {},
 })
 
@@ -63,83 +37,92 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
-    // Rehydrate session on mount
-    const auth = localStorage.getItem(AUTH_KEY)
-    if (auth === "true") {
-      try {
-        const u = JSON.parse(localStorage.getItem(USER_KEY) || "null")
-        if (u) { setIsAuthenticated(true); setUser(u) }
-      } catch { /* ignore */ }
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.user) {
+        setIsAuthenticated(true)
+        setUser({
+          email: session.user.email!,
+          name: session.user.user_metadata.name || session.user.user_metadata.full_name || "User",
+        })
+      }
     }
 
-    // ── Supabase equivalent:
-    // const { data: { session } } = await supabase.auth.getSession()
-    // if (session?.user) { setIsAuthenticated(true); setUser({ email: session.user.email!, name: session.user.user_metadata.name }) }
-    // const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-    //   setIsAuthenticated(!!session); setUser(session ? { email: session.user.email!, name: session.user.user_metadata.name } : null)
-    // })
-    // return () => subscription.unsubscribe()
+    checkUser()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session)
+      setUser(session ? {
+        email: session.user.email!,
+        name: session.user.user_metadata.name || session.user.user_metadata.full_name || "User",
+      } : null)
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
-  // ── Login ─────────────────────────────────────────────────────────────────
+  // ── Email / Password Login ────────────────────────────────────────────────
 
   const login = async (email: string, password: string): Promise<{ error?: string }> => {
-    const users = getStoredUsers()
-    const match = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password)
-    if (!match) return { error: "Invalid email or password." }
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) return { error: error.message }
 
-    const u: User = { email: match.email, name: match.name }
-    localStorage.setItem(AUTH_KEY, "true")
-    localStorage.setItem(USER_KEY, JSON.stringify(u))
     setIsAuthenticated(true)
-    setUser(u)
+    setUser({
+      email: data.user.email!,
+      name: data.user.user_metadata.name || "User",
+    })
     return {}
+  }
 
-    // ── Supabase equivalent:
-    // const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-    // if (error) return { error: error.message }
-    // setIsAuthenticated(true); setUser({ email: data.user.email!, name: data.user.user_metadata.name })
-    // return {}
+  // ── Google OAuth ──────────────────────────────────────────────────────────
+
+  const loginWithGoogle = async (): Promise<{ error?: string }> => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/calculator`,
+      },
+    })
+    if (error) return { error: error.message }
+    return {}
   }
 
   // ── Register ──────────────────────────────────────────────────────────────
 
   const register = async (name: string, email: string, password: string): Promise<{ error?: string }> => {
-    const users = getStoredUsers()
-    if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
-      return { error: "An account with this email already exists." }
+    // Use backend to create user via service role key (bypasses email confirmation)
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+    const resp = await fetch(`${apiBase}/api/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password }),
+    })
+
+    if (!resp.ok) {
+      const data = await resp.json()
+      return { error: data.detail || "Registration failed" }
     }
 
-    saveStoredUser({ name, email, password })
+    // Sign in immediately after account creation
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) return { error: error.message }
 
-    const u: User = { email, name }
-    localStorage.setItem(AUTH_KEY, "true")
-    localStorage.setItem(USER_KEY, JSON.stringify(u))
     setIsAuthenticated(true)
-    setUser(u)
+    setUser({ email: data.user.email!, name })
     return {}
-
-    // ── Supabase equivalent:
-    // const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } })
-    // if (error) return { error: error.message }
-    // setIsAuthenticated(true); setUser({ email: data.user!.email!, name })
-    // return {}
   }
 
   // ── Logout ────────────────────────────────────────────────────────────────
 
-  const logout = () => {
-    localStorage.removeItem(AUTH_KEY)
-    localStorage.removeItem(USER_KEY)
+  const logout = async () => {
+    await supabase.auth.signOut()
     setIsAuthenticated(false)
     setUser(null)
-
-    // ── Supabase equivalent:
-    // await supabase.auth.signOut()
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, register, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, register, loginWithGoogle, logout }}>
       {children}
     </AuthContext.Provider>
   )

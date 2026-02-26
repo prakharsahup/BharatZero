@@ -131,11 +131,14 @@ export default function LandingPage() {
             )}
           </div>
           {/* Mobile CTA */}
-          <button className="md:hidden" onClick={handleCalculatorNav}>
-            <Button variant="outline-dark" size="sm" asChild={false}>
-              {isAuthenticated ? "Calculator" : "Sign In"}
-            </Button>
-          </button>
+          <Button 
+            variant="outline-dark" 
+            size="sm" 
+            className="md:hidden" 
+            onClick={handleCalculatorNav}
+          >
+            {isAuthenticated ? "Calculator" : "Sign In"}
+          </Button>
         </div>
       </nav>
 

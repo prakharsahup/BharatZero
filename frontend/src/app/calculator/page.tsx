@@ -12,7 +12,6 @@ import IntensityCard   from "@/components/Dashboard/IntensityCard"
 import CBAMBadge       from "@/components/Dashboard/CBAMBadge"
 import DownloadButton  from "@/components/Dashboard/DownloadButton"
 import type { CalculationResult } from "@/types/emission"
-import type { StoredResult } from "@/app/results/page"
 
 export default function CalculatorPage() {
   const router = useRouter()
@@ -26,19 +25,7 @@ export default function CalculatorPage() {
   if (!isAuthenticated) return null
 
   const handleResult = (res: CalculationResult) => {
-    // Persist to localStorage so the Results page can display history
-    try {
-      const existing: StoredResult[] = JSON.parse(localStorage.getItem("bz_results") || "[]")
-      const entry: StoredResult = {
-        timestamp:   new Date().toISOString(),
-        companyName: "",   // InputForm doesn't expose these — will be populated when Supabase is connected
-        industry:    "",
-        state:       "",
-        result:      res,
-      }
-      existing.unshift(entry)
-      localStorage.setItem("bz_results", JSON.stringify(existing.slice(0, 50)))
-    } catch { /* ignore */ }
+    // Results are persisted server-side via /api/calculate — no local storage needed
     setResult(res)
   }
 

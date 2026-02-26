@@ -3,26 +3,16 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, ArrowRight, Leaf } from "lucide-react"
+import { ArrowLeft, ArrowRight, Leaf, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/lib/auth"
-import type { CalculationResult } from "@/types/emission"
-
-// ─── Stored result shape ──────────────────────────────────────────────────────
-
-export interface StoredResult {
-  timestamp: string
-  companyName: string
-  industry: string
-  state: string
-  result: CalculationResult
-}
+import { getCalculations, type HistoryEntry } from "@/lib/api"
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function statusColor(status: string) {
-  if (status === "green")  return "text-cbam-green border-cbam-green/40 bg-cbam-green/10"
-  if (status === "yellow") return "text-cbam-yellow border-cbam-yellow/40 bg-cbam-yellow/10"
+function statusColor(color: string) {
+  if (color === "green")  return "text-cbam-green border-cbam-green/40 bg-cbam-green/10"
+  if (color === "yellow") return "text-cbam-yellow border-cbam-yellow/40 bg-cbam-yellow/10"
   return "text-cbam-red border-cbam-red/40 bg-cbam-red/10"
 }
 
@@ -38,20 +28,23 @@ function formatDate(iso: string) {
 export default function ResultsPage() {
   const router = useRouter()
   const { isAuthenticated, user } = useAuth()
-  const [results, setResults] = useState<StoredResult[]>([])
+  const [results, setResults] = useState<HistoryEntry[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
 
   // Auth guard
   useEffect(() => {
     if (!isAuthenticated) router.replace("/login")
   }, [isAuthenticated, router])
 
-  // Load from localStorage
+  // Fetch from backend
   useEffect(() => {
     if (!isAuthenticated) return
-    try {
-      const raw = localStorage.getItem("bz_results")
-      if (raw) setResults(JSON.parse(raw))
-    } catch { setResults([]) }
+    setLoading(true)
+    getCalculations()
+      .then(setResults)
+      .catch(() => setError("Failed to load calculations. Please try again."))
+      .finally(() => setLoading(false))
   }, [isAuthenticated])
 
   if (!isAuthenticated) return null
@@ -99,8 +92,23 @@ export default function ResultsPage() {
       {/* ═══════════ RESULTS LIST ═══════════ */}
       <section className="py-12 md:py-16 px-6">
         <div className="max-w-5xl mx-auto">
-          {results.length === 0 ? (
-            /* Empty state */
+
+          {/* Loading */}
+          {loading && (
+            <div className="flex items-center justify-center min-h-[360px]">
+              <RefreshCw className="h-6 w-6 text-foreground/30 animate-spin" />
+            </div>
+          )}
+
+          {/* Error */}
+          {!loading && error && (
+            <div className="text-cbam-red text-sm border border-cbam-red/30 bg-cbam-red/5 px-6 py-4">
+              {error}
+            </div>
+          )}
+
+          {/* Empty state */}
+          {!loading && !error && results.length === 0 && (
             <div className="flex flex-col items-center justify-center min-h-[360px] border border-foreground/10 text-center p-12 bg-white/30">
               <div className="h-16 w-16 border border-foreground/20 flex items-center justify-center mb-6">
                 <Leaf className="h-7 w-7 text-foreground/30" />
@@ -118,7 +126,10 @@ export default function ResultsPage() {
                 </Button>
               </Link>
             </div>
-          ) : (
+          )}
+
+          {/* Results table */}
+          {!loading && !error && results.length > 0 && (
             <div className="space-y-0">
               {/* Header row */}
               <div className="hidden md:grid grid-cols-[1fr_120px_120px_140px_80px] gap-4 px-6 py-3 bg-dark-bg text-white/40 text-xs font-bold uppercase tracking-widest">
@@ -129,23 +140,25 @@ export default function ResultsPage() {
                 <span className="text-right">Date</span>
               </div>
 
-              {results.map((entry, i) => (
+              {results.map((entry) => (
                 <div
-                  key={i}
+                  key={entry.session_id}
                   className="grid md:grid-cols-[1fr_120px_120px_140px_80px] gap-4 items-center px-6 py-5 border border-foreground/10 bg-cream hover:bg-sage/10 transition-colors"
                 >
                   {/* Company / Industry */}
                   <div>
                     <p className="font-bold text-dark-bg uppercase tracking-wide text-sm">
-                      {entry.companyName || "—"}
+                      {entry.company_name || "—"}
                     </p>
-                    <p className="text-foreground/50 text-xs mt-1 capitalize">{entry.industry} · {entry.state?.replace(/_/g, " ")}</p>
+                    <p className="text-foreground/50 text-xs mt-1 capitalize">
+                      {entry.industry} · {entry.state?.replace(/_/g, " ")}
+                    </p>
                   </div>
 
                   {/* Total */}
                   <div className="text-right">
                     <p className="font-bold text-dark-bg text-base font-serif">
-                      {entry.result.total_tco2e.toFixed(3)}
+                      {entry.total_tco2e?.toFixed(3) ?? "—"}
                     </p>
                     <p className="text-foreground/40 text-xs">tCO₂e</p>
                   </div>
@@ -153,22 +166,21 @@ export default function ResultsPage() {
                   {/* Intensity */}
                   <div className="text-right">
                     <p className="font-bold text-dark-bg text-sm font-serif">
-                      {entry.result.intensity.toFixed(4)}
+                      {entry.intensity?.toFixed(4) ?? "—"}
                     </p>
                     <p className="text-foreground/40 text-xs">tCO₂e/t</p>
                   </div>
 
                   {/* CBAM Badge */}
                   <div className="flex md:justify-end">
-                    <span className={`inline-block border px-3 py-1 text-xs font-bold uppercase tracking-wide ${statusColor(entry.result.cbam_status.status)}`}>
-                      {entry.result.cbam_status.status === "green"  ? "CBAM Ready" :
-                       entry.result.cbam_status.status === "yellow" ? "Near Limit" : "Exceeds Limit"}
+                    <span className={`inline-block border px-3 py-1 text-xs font-bold uppercase tracking-wide ${statusColor(entry.cbam_color)}`}>
+                      {entry.cbam_label}
                     </span>
                   </div>
 
                   {/* Date */}
                   <div className="text-right">
-                    <p className="text-foreground/50 text-xs">{formatDate(entry.timestamp)}</p>
+                    <p className="text-foreground/50 text-xs">{formatDate(entry.created_at)}</p>
                   </div>
                 </div>
               ))}
