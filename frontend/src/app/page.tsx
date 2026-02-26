@@ -1,6 +1,10 @@
+"use client"
+
 import Link from "next/link"
 import { ArrowRight, Zap, Shield, FileText, BarChart3, MapPin, Factory } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useAuth } from "@/lib/auth"
+import { useRouter } from "next/navigation"
 
 const PAIN_POINTS = [
   {
@@ -72,14 +76,27 @@ const FEATURES = [
 ]
 
 export default function LandingPage() {
+  const { isAuthenticated, logout } = useAuth()
+  const router = useRouter()
+
+  const handleCalculatorNav = () => {
+    if (isAuthenticated) {
+      router.push("/calculator")
+    } else {
+      router.push("/login")
+    }
+  }
+
   return (
     <div className="min-h-screen">
       {/* ═══════════ STICKY NAVBAR ═══════════ */}
       <nav className="sticky top-0 z-50 bg-dark-bg/95 backdrop-blur-sm border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <span className="text-lime font-serif text-xl font-semibold tracking-tight">
-            GreenLedger
-          </span>
+          <Link href="/">
+            <span className="text-lime font-serif text-xl font-semibold tracking-tight cursor-pointer hover:opacity-80 transition-opacity">
+              BharatZero
+            </span>
+          </Link>
           <div className="hidden md:flex items-center gap-8">
             <a href="#about" className="text-white/70 text-xs font-bold uppercase tracking-widest hover:text-lime transition-colors">
               About
@@ -90,18 +107,35 @@ export default function LandingPage() {
             <a href="#features" className="text-white/70 text-xs font-bold uppercase tracking-widest hover:text-lime transition-colors">
               Features
             </a>
-            <Link href="/calculator">
-              <Button variant="outline-dark" size="sm">
-                Start Calculating
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <div className="flex items-center gap-4">
+                <Link href="/results" className="text-white/70 text-xs font-bold uppercase tracking-widest hover:text-lime transition-colors">
+                  My Results
+                </Link>
+                <Button variant="outline-dark" size="sm" onClick={handleCalculatorNav}>
+                  Calculator
+                </Button>
+                <button
+                  onClick={logout}
+                  className="text-white/50 text-xs font-bold uppercase tracking-widest hover:text-lime transition-colors"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <Link href="/login">
+                <Button variant="outline-dark" size="sm">
+                  Sign In
+                </Button>
+              </Link>
+            )}
           </div>
           {/* Mobile CTA */}
-          <Link href="/calculator" className="md:hidden">
-            <Button variant="outline-dark" size="sm">
-              Calculate
+          <button className="md:hidden" onClick={handleCalculatorNav}>
+            <Button variant="outline-dark" size="sm" asChild={false}>
+              {isAuthenticated ? "Calculator" : "Sign In"}
             </Button>
-          </Link>
+          </button>
         </div>
       </nav>
 
@@ -121,12 +155,10 @@ export default function LandingPage() {
             compliance, and generate audit-ready reports — in minutes.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/calculator">
-              <Button variant="lime" size="xl">
-                Launch Calculator
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+            <Button variant="lime" size="xl" onClick={handleCalculatorNav}>
+              Launch Calculator
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
             <a href="#how-it-works">
               <Button variant="outline-dark" size="xl">
                 Learn How It Works
@@ -213,7 +245,7 @@ export default function LandingPage() {
             Built for Indian Exporters
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-0">
-            {FEATURES.map(({ Icon, title, desc }, i) => (
+            {FEATURES.map(({ Icon, title, desc }) => (
               <div
                 key={title}
                 className="p-8 border border-foreground/8 hover:bg-sage/10 transition-colors group"
@@ -244,12 +276,10 @@ export default function LandingPage() {
           <p className="text-dark-bg/60 text-base max-w-xl mx-auto mb-10">
             The consultant quoted ₹4 lakh. This takes 60 seconds and is free.
           </p>
-          <Link href="/calculator">
-            <Button variant="default" size="xl" className="bg-dark-bg text-white border-dark-bg hover:bg-lime hover:text-dark-bg">
-              Open Calculator
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
+          <Button variant="default" size="xl" className="bg-dark-bg text-white border-dark-bg hover:bg-lime hover:text-dark-bg" onClick={handleCalculatorNav}>
+            Open Calculator
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
         </div>
       </section>
 
@@ -257,7 +287,7 @@ export default function LandingPage() {
       <footer className="bg-dark-bg text-white border-t border-white/10">
         <div className="max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-8 items-start">
           <div>
-            <span className="text-lime font-serif text-lg font-semibold">GreenLedger Lite</span>
+            <span className="text-lime font-serif text-lg font-semibold">BharatZero</span>
             <p className="text-white/30 text-xs mt-2 leading-relaxed">
               CBAM Carbon Calculator for Indian MSMEs.
               <br />
@@ -283,7 +313,7 @@ export default function LandingPage() {
         {/* Neon lime copyright bar */}
         <div className="bg-lime px-6 py-3">
           <p className="text-dark-bg text-xs font-semibold text-center tracking-wide">
-            © 2025 GreenLedger Lite. All rights reserved. Reports are AI-assisted drafts — verify with a qualified professional.
+            © 2025 BharatZero. All rights reserved. Reports are AI-assisted drafts — verify with a qualified professional.
           </p>
         </div>
       </footer>

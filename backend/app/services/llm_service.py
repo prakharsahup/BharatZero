@@ -3,50 +3,79 @@ import anthropic
 from app.config import settings
 
 
-ELECTRICITY_PROMPT = """Extract from this electricity bill text:
-- Total units consumed in kWh (look for "units", "kWh", "UNITS CONSUMED", "Net Units")
-- Billing month and year
-- State or DISCOM name
+ELECTRICITY_INSTRUCTION = (
+    'Extract from this electricity bill:\n'
+    '- Total units consumed in kWh (look for "units", "kWh", "UNITS CONSUMED", "Net Units")\n'
+    '- Billing month and year\n'
+    '- State or DISCOM name\n\n'
+    'Respond with JSON only, no explanation:\n'
+    '{"kwh": <number>, "state": "<state name>", "month": "<YYYY-MM>"}'
+)
 
-Electricity bill text:
-{raw_text}
-
-Respond with JSON only, no explanation:
-{{"kwh": <number>, "state": "<state name>", "month": "<YYYY-MM>"}}"""
-
-DIESEL_PROMPT = """Extract from this diesel invoice text:
-- Total diesel quantity in liters (look for "Qty", "Quantity", "Litres", "KL")
-- Invoice date
-
-Diesel invoice text:
-{raw_text}
-
-Respond with JSON only, no explanation:
-{{"liters": <number>, "date": "<YYYY-MM-DD>"}}"""
+DIESEL_INSTRUCTION = (
+    'Extract from this diesel invoice:\n'
+    '- Total diesel quantity in liters (look for "Qty", "Quantity", "Litres", "KL")\n'
+    '- Invoice date\n\n'
+    'Respond with JSON only, no explanation:\n'
+    '{"liters": <number>, "date": "<YYYY-MM-DD>"}'
+)
 
 
-def extract_bill_data(raw_text: str, document_type: str) -> dict:
-    """Use Claude claude-sonnet-4-6 to extract structured data from OCR'd bill text."""
+def extract_bill_data(content: dict, document_type: str) -> dict:
+    """
+    Use Claude to extract structured data from a bill.
+
+    `content` is the dict returned by ocr_service.extract_content():
+      {"type": "text",  "content": "..."}
+    or
+      {"type": "image", "content": "<b64>", "media_type": "image/png"}
+    """
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
 
-    if document_type == "electricity_bill":
-        prompt = ELECTRICITY_PROMPT.format(raw_text=raw_text[:4000])
+    instruction = (
+        ELECTRICITY_INSTRUCTION
+        if document_type == "electricity_bill"
+        else DIESEL_INSTRUCTION
+    )
+
+    if content["type"] == "text":
+        # Plain-text prompt — cheaper and fast
+        messages = [
+            {
+                "role": "user",
+                "content": f"{instruction}\n\nBill text:\n{content['content'][:4000]}",
+            }
+        ]
     else:
-        prompt = DIESEL_PROMPT.format(raw_text=raw_text[:4000])
+        # Vision prompt — send the bill image directly to Claude
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image",
+                        "source": {
+                            "type": "base64",
+                            "media_type": content["media_type"],
+                            "data": content["content"],
+                        },
+                    },
+                    {"type": "text", "text": instruction},
+                ],
+            }
+        ]
 
     message = client.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=512,
-        messages=[{"role": "user", "content": prompt}],
+        messages=messages,
     )
 
     response_text = message.content[0].text.strip()
 
-    # Strip markdown code fences if Claude wraps JSON in them
+    # Strip markdown code fences if Claude wraps the JSON
     if response_text.startswith("```"):
         lines = response_text.split("\n")
-        # Remove first and last fence lines
-        inner = [l for l in lines if not l.startswith("```")]
-        response_text = "\n".join(inner).strip()
+        response_text = "\n".join(l for l in lines if not l.startswith("```")).strip()
 
     return json.loads(response_text)

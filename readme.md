@@ -1,3 +1,11 @@
+Terminal 1 (Backend)
+cd P:\ECodeathon\backend
+.\venv\Scripts\Activate.ps1
+uvicorn app.main:app --reload --port 8000
+Terminal 2 (Frontend)
+cd P:\ECodeathon\frontend
+npm run dev
+
 # 🌿 GreenLedger Lite — CBAM Carbon Calculator for Indian Exporters
 
 > An AI-powered Scope 1 & 2 carbon reporting tool that helps Indian MSMEs calculate their embedded carbon emissions and check CBAM compliance — built for a 48-hour hackathon.
@@ -604,7 +612,7 @@ Only three variables needed to run locally. No cloud credentials required for th
 ```bash
 cd backend
 python -m venv venv
-source venv/bin/activate       # Windows: venv\Scripts\activate
+.\venv\Scripts\Activate.ps1      # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # Create .env
@@ -620,8 +628,9 @@ uvicorn app.main:app --reload --port 8000
 ```bash
 cd frontend
 npm install
-echo "NEXT_PUBLIC_API_URL=http://localhost:8000" > .env.local
-npm run dev
+.\venv\Scripts\Activate.ps1; uvicorn app.main:app --reload --port 8000
+# echo "NEXT_PUBLIC_API_URL=http://localhost:8000" > .env.local
+# npm run dev
 # App: http://localhost:3000
 ```
 

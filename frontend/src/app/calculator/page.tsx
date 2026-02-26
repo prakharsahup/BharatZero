@@ -1,8 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { ArrowLeft, BarChart2 } from "lucide-react"
+import { useAuth } from "@/lib/auth"
 import InputForm       from "@/components/Calculator/InputForm"
 import EmissionSummary from "@/components/Dashboard/EmissionSummary"
 import ScopeDonut      from "@/components/Dashboard/ScopeDonut"
@@ -10,9 +12,35 @@ import IntensityCard   from "@/components/Dashboard/IntensityCard"
 import CBAMBadge       from "@/components/Dashboard/CBAMBadge"
 import DownloadButton  from "@/components/Dashboard/DownloadButton"
 import type { CalculationResult } from "@/types/emission"
+import type { StoredResult } from "@/app/results/page"
 
 export default function CalculatorPage() {
+  const router = useRouter()
+  const { isAuthenticated } = useAuth()
   const [result, setResult] = useState<CalculationResult | null>(null)
+
+  useEffect(() => {
+    if (!isAuthenticated) router.replace("/login")
+  }, [isAuthenticated, router])
+
+  if (!isAuthenticated) return null
+
+  const handleResult = (res: CalculationResult) => {
+    // Persist to localStorage so the Results page can display history
+    try {
+      const existing: StoredResult[] = JSON.parse(localStorage.getItem("bz_results") || "[]")
+      const entry: StoredResult = {
+        timestamp:   new Date().toISOString(),
+        companyName: "",   // InputForm doesn't expose these — will be populated when Supabase is connected
+        industry:    "",
+        state:       "",
+        result:      res,
+      }
+      existing.unshift(entry)
+      localStorage.setItem("bz_results", JSON.stringify(existing.slice(0, 50)))
+    } catch { /* ignore */ }
+    setResult(res)
+  }
 
   return (
     <div className="min-h-screen bg-cream">
@@ -27,10 +55,19 @@ export default function CalculatorPage() {
               <ArrowLeft className="h-4 w-4" />
               Back to Home
             </Link>
+            <Link
+              href="/results"
+              className="hidden sm:flex items-center gap-2 text-white/50 text-xs font-bold uppercase tracking-widest hover:text-lime transition-colors"
+            >
+              <BarChart2 className="h-4 w-4" />
+              My Results
+            </Link>
           </div>
-          <span className="text-lime font-serif text-xl font-semibold tracking-tight">
-            GreenLedger
-          </span>
+          <Link href="/">
+            <span className="text-lime font-serif text-xl font-semibold tracking-tight cursor-pointer hover:opacity-80 transition-opacity">
+              BharatZero
+            </span>
+          </Link>
           <span className="text-white/30 text-xs font-bold uppercase tracking-widest hidden sm:block">
             Calculator
           </span>
@@ -56,7 +93,7 @@ export default function CalculatorPage() {
       {/* ═══════════ DATA INPUT SECTION ═══════════ */}
       <section className="bg-cream py-12 md:py-16 px-6 border-b border-foreground/10">
         <div className="max-w-5xl mx-auto">
-          <InputForm onResult={setResult} />
+          <InputForm onResult={handleResult} />
         </div>
       </section>
 
@@ -64,7 +101,6 @@ export default function CalculatorPage() {
       <section className="bg-dark-bg text-white py-12 md:py-16 px-6">
         <div className="max-w-5xl mx-auto">
           {result === null ? (
-            /* Placeholder before first calculation */
             <div className="flex flex-col items-center justify-center min-h-[320px] border border-white/10 text-center p-12">
               <div className="h-16 w-16 border border-white/20 flex items-center justify-center mb-6">
                 <span className="text-3xl">🌿</span>
@@ -79,10 +115,7 @@ export default function CalculatorPage() {
             </div>
           ) : (
             <div className="space-y-8">
-              {/* Summary cards */}
               <EmissionSummary result={result} />
-
-              {/* Donut + Intensity side by side */}
               <div className="grid md:grid-cols-2 gap-0 border border-white/10">
                 <div className="p-6 md:border-r border-white/10">
                   <ScopeDonut result={result} />
@@ -91,14 +124,8 @@ export default function CalculatorPage() {
                   <IntensityCard result={result} />
                 </div>
               </div>
-
-              {/* CBAM badge */}
               <CBAMBadge result={result} />
-
-              {/* PDF download */}
               <DownloadButton sessionId={result.session_id} />
-
-              {/* Methodology note */}
               <div className="border-t border-white/10 pt-6">
                 <p className="text-white/20 text-xs uppercase tracking-widest mb-2 font-bold">
                   Methodology
@@ -119,7 +146,7 @@ export default function CalculatorPage() {
       <footer className="bg-dark-bg border-t border-white/10">
         <div className="bg-lime px-6 py-3">
           <p className="text-dark-bg text-xs font-semibold text-center tracking-wide">
-            © 2025 GreenLedger Lite. All rights reserved. Built for Indian MSMEs 🇮🇳
+            © 2025 BharatZero. All rights reserved. Built for Indian MSMEs 🇮🇳
           </p>
         </div>
       </footer>
