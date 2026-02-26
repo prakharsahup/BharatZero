@@ -78,13 +78,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // ── Google OAuth ──────────────────────────────────────────────────────────
 
   const loginWithGoogle = async (): Promise<{ error?: string }> => {
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/calculator`,
+        skipBrowserRedirect: true,
       },
     })
     if (error) return { error: error.message }
+    if (!data?.url) return { error: "Google sign-in is not available. Please use email & password." }
+    // Only redirect after confirming no error
+    window.location.href = data.url
     return {}
   }
 

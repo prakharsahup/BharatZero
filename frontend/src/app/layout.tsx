@@ -1,17 +1,18 @@
 import type { Metadata } from "next"
-import { Inter, Playfair_Display } from "next/font/google"
+import { Geist, Young_Serif } from "next/font/google"
 import "./globals.css"
 import Providers from "./providers"
 
-const inter = Inter({
+const geist = Geist({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-geist",
+  weight: ["300", "400", "500", "600", "700"],
 })
 
-const playfair = Playfair_Display({
+const youngSerif = Young_Serif({
   subsets: ["latin"],
-  variable: "--font-playfair",
-  weight: ["400", "500", "600", "700"],
+  variable: "--font-young-serif",
+  weight: ["400"],
 })
 
 export const metadata: Metadata = {
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
+      <body className={`${geist.variable} ${youngSerif.variable} font-sans antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

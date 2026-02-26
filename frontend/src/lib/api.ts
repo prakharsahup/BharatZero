@@ -61,3 +61,25 @@ export async function getCalculations(): Promise<HistoryEntry[]> {
   const { data } = await api.get<HistoryEntry[]>("/api/calculations")
   return data
 }
+
+export interface ComplianceRisk {
+  area: string
+  detail: string
+}
+
+export interface ComplianceNote {
+  summary: string
+  risk_level: "low" | "medium" | "high"
+  key_risks: ComplianceRisk[]
+  recommendations: string[]
+  phase_note: string
+}
+
+export async function getComplianceNote(sessionId: string): Promise<ComplianceNote> {
+  const { data } = await api.post<ComplianceNote>(
+    "/api/compliance",
+    { session_id: sessionId },
+    { timeout: 30_000 },   // 30s — fast-fail if Gemini quota is hit
+  )
+  return data
+}

@@ -60,7 +60,7 @@ def generate_report_pdf(calc: Any, cbam_status: dict) -> bytes:
 
     header_table = Table(
         [[
-            Paragraph("GreenLedger Lite", header_style),
+            Paragraph("BharatZero", header_style),
             Paragraph("CBAM Carbon Emissions Report", sub_style),
         ]],
         colWidths=["55%", "45%"],

@@ -11,6 +11,8 @@ import ScopeDonut      from "@/components/Dashboard/ScopeDonut"
 import IntensityCard   from "@/components/Dashboard/IntensityCard"
 import CBAMBadge       from "@/components/Dashboard/CBAMBadge"
 import DownloadButton  from "@/components/Dashboard/DownloadButton"
+import PDFPreview      from "@/components/Dashboard/PDFPreview"
+import ComplianceNote  from "@/components/Dashboard/ComplianceNote"
 import type { CalculationResult } from "@/types/emission"
 
 export default function CalculatorPage() {
@@ -112,6 +114,8 @@ export default function CalculatorPage() {
                 </div>
               </div>
               <CBAMBadge result={result} />
+              <ComplianceNote sessionId={result.session_id} />
+              <PDFPreview sessionId={result.session_id} />
               <DownloadButton sessionId={result.session_id} />
               <div className="border-t border-white/10 pt-6">
                 <p className="text-white/20 text-xs uppercase tracking-widest mb-2 font-bold">

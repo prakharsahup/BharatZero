@@ -2,7 +2,7 @@ from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 
 from app.config import settings
 from app.services.ocr_service import extract_content
-from app.services.llm_service import extract_bill_data
+from app.services.llm_service import extract_bill_data, QuotaExceededError
 
 router = APIRouter()
 
@@ -26,10 +26,10 @@ async def extract_from_file(
             detail=f"document_type must be one of: {', '.join(ALLOWED_TYPES)}",
         )
 
-    if not settings.anthropic_api_key:
+    if not settings.gemini_api_key:
         raise HTTPException(
             status_code=503,
-            detail="OCR extraction not configured. Set ANTHROPIC_API_KEY in backend .env",
+            detail="OCR extraction not configured. Set GEMINI_API_KEY in backend/.env",
         )
 
     file_bytes = await file.read()
@@ -48,6 +48,16 @@ async def extract_from_file(
 
     try:
         extracted = extract_bill_data(content, document_type)
+    except QuotaExceededError:
+        raise HTTPException(
+            status_code=429,
+            detail=(
+                "Gemini API free-tier quota exceeded for today. "
+                "Please enter your bill data manually, or try again tomorrow. "
+                "To remove this limit, add billing to your Google AI project at "
+                "https://ai.google.dev"
+            ),
+        )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"LLM extraction failed: {exc}")
 

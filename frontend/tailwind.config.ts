@@ -49,8 +49,8 @@ const config: Config = {
         "cbam-red":    "#EF4444",
       },
       fontFamily: {
-        serif: ["var(--font-playfair)", "Playfair Display", "Georgia", "serif"],
-        sans:  ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
+        serif: ["var(--font-young-serif)", "Young Serif", "Georgia", "serif"],
+        sans:  ["var(--font-geist)", "Geist", "system-ui", "sans-serif"],
       },
       borderRadius: {
         lg: "0px",

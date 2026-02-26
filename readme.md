@@ -6,7 +6,7 @@ Terminal 2 (Frontend)
 cd P:\ECodeathon\frontend
 npm run dev
 
-# 🌿 GreenLedger Lite — CBAM Carbon Calculator for Indian Exporters
+# 🌿 BharatZero — CBAM Carbon Calculator for Indian Exporters
 
 > An AI-powered Scope 1 & 2 carbon reporting tool that helps Indian MSMEs calculate their embedded carbon emissions and check CBAM compliance — built for a 48-hour hackathon.
 
@@ -222,7 +222,7 @@ User confirms values and submits
 ## File & Folder Structure
 
 ```
-greenledger-lite/
+bharatzero/
 |
 +-- README.md
 +-- .env.example
@@ -587,7 +587,7 @@ EU Benchmark:     1.89   tCO2e / tonne
 ```bash
 # backend/.env
 ANTHROPIC_API_KEY=sk-ant-...
-DATABASE_URL=sqlite:///./greenledger.db
+DATABASE_URL=sqlite:///./bharatzero.db
 ENVIRONMENT=development
 
 # frontend/.env.local
@@ -617,7 +617,7 @@ pip install -r requirements.txt
 
 # Create .env
 echo "ANTHROPIC_API_KEY=your_key_here" > .env
-echo "DATABASE_URL=sqlite:///./greenledger.db" >> .env
+echo "DATABASE_URL=sqlite:///./bharatzero.db" >> .env
 
 uvicorn app.main:app --reload --port 8000
 # API docs: http://localhost:8000/docs
@@ -750,7 +750,7 @@ Total deployment time: under 10 minutes.
 
 ### What to say
 
-"Indian MSMEs exporting steel, cement, and aluminium to the EU now face the CBAM carbon border tax. The problem: they have no way to calculate their embedded carbon. Consultants charge Rs 3-10 lakh a year. We built GreenLedger Lite. Upload your electricity bill and diesel invoice. In 60 seconds you get your Scope 1 and Scope 2 emissions, your carbon intensity compared to the EU benchmark, and a CBAM-ready PDF report. Scope 3 and multi-regulation support is Phase 2."
+"Indian MSMEs exporting steel, cement, and aluminium to the EU now face the CBAM carbon border tax. The problem: they have no way to calculate their embedded carbon. Consultants charge Rs 3-10 lakh a year. We built BharatZero. Upload your electricity bill and diesel invoice. In 60 seconds you get your Scope 1 and Scope 2 emissions, your carbon intensity compared to the EU benchmark, and a CBAM-ready PDF report. Scope 3 and multi-regulation support is Phase 2."
 
 ### What not to say
 

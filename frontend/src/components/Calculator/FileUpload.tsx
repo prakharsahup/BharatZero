@@ -28,9 +28,12 @@ export default function FileUpload({ documentType, label, onExtracted }: FileUpl
       setMessage("Auto-filled from bill")
     } catch (err: unknown) {
       setState("error")
+      const status = (err as { response?: { status?: number } })?.response?.status
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
       const msg =
-        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ||
-        "Extraction failed. Try entering values manually."
+        status === 429
+          ? "Gemini API quota exceeded for today. Please enter values manually."
+          : detail || "Extraction failed. Try entering values manually."
       setMessage(msg)
     }
   }

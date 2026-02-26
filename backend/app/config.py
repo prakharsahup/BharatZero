@@ -2,9 +2,12 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    anthropic_api_key: str = ""
-    database_url:      str = "sqlite:///./greenledger.db"
-    environment:       str = "development"
+    gemini_api_key:           str = ""
+    database_url:             str = ""
+    supabase_url:             str = ""
+    supabase_jwt_secret:      str = ""
+    supabase_service_role_key: str = ""
+    environment:              str = "development"
 
     model_config = {"env_file": ".env", "extra": "ignore"}
 
