@@ -4,22 +4,41 @@
 
 @layer base {
   :root {
-    --background:   0 0% 100%;
-    --foreground:   224 71.4% 4.1%;
-    --card:         0 0% 100%;
-    --card-foreground: 224 71.4% 4.1%;
-    --primary:      142.1 76.2% 36.3%;
-    --primary-foreground: 355.7 100% 97.3%;
-    --secondary:    220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-    --muted:        220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
-    --accent:       220 14.3% 95.9%;
-    --accent-foreground: 220.9 39.3% 11%;
-    --border:       220 13% 91%;
-    --input:        220 13% 91%;
-    --ring:         142.1 76.2% 36.3%;
-    --radius:       0.5rem;
+    /* ── N47-inspired palette ── */
+    --background: 67 14% 92%; /* #EEEFE3 warm cream */
+    --foreground: 152 100% 6%; /* #011D0F deep forest green */
+    --card: 67 14% 92%;
+    --card-foreground: 152 100% 6%;
+    --popover: 67 14% 92%;
+    --popover-foreground: 152 100% 6%;
+
+    --primary: 65 100% 67%; /* #F4FF55 neon lime */
+    --primary-foreground: 152 100% 6%; /* dark text on lime */
+
+    --secondary: 144 8% 63%; /* #9FABA1 sage */
+    --secondary-foreground: 152 100% 6%;
+
+    --muted: 144 8% 63%;
+    --muted-foreground: 150 10% 40%;
+
+    --accent: 65 100% 67%;
+    --accent-foreground: 152 100% 6%;
+
+    --border: 150 10% 70%;
+    --input: 150 10% 70%;
+    --ring: 65 100% 67%;
+
+    /* ── Radius: 0 for sharp edges ── */
+    --radius: 0px;
+
+    /* ── Extended tokens ── */
+    --dark-bg: #011d0f;
+    --cream: #eeefe3;
+    --lime: #f4ff55;
+    --sage: #9faba1;
+    --cbam-green: #22c55e;
+    --cbam-yellow: #eab308;
+    --cbam-red: #ef4444;
   }
 }
 
@@ -27,7 +46,50 @@
   * {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* ── Fade-in animation for scroll reveals ── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.7s ease-out both;
+}
+
+/* ── Subtle grid pattern for hero ── */
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(rgba(244, 255, 85, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(244, 255, 85, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ── Hairline border utility ── */
+.border-hairline {
+  border-width: 0.8px;
+}
+
+/* ── Custom scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--sage);
 }

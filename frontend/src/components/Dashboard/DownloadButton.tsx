@@ -36,21 +36,23 @@ export default function DownloadButton({ sessionId }: DownloadButtonProps) {
       <Button
         onClick={handleDownload}
         disabled={loading}
-        className="w-full bg-gray-900 hover:bg-gray-800 text-white py-5 text-base"
+        variant="lime"
+        size="xl"
+        className="w-full text-base"
       >
         {loading ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
             Generating PDF…
           </>
         ) : (
           <>
-            <Download className="mr-2 h-4 w-4" />
+            <Download className="mr-2 h-5 w-5" />
             Download CBAM Report PDF
           </>
         )}
       </Button>
-      {error && <p className="mt-1 text-xs text-red-500 text-center">{error}</p>}
+      {error && <p className="mt-2 text-xs text-cbam-red text-center">{error}</p>}
     </div>
   )
 }

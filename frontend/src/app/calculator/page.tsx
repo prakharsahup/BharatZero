@@ -15,65 +15,82 @@ export default function CalculatorPage() {
   const [result, setResult] = useState<CalculationResult | null>(null)
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Top bar */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center gap-4">
-        <Link
-          href="/"
-          className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back
-        </Link>
-        <div className="flex items-center gap-2">
-          <div className="h-7 w-7 rounded-full bg-green-600 flex items-center justify-center">
-            <span className="text-white text-xs font-bold">GL</span>
+    <div className="min-h-screen bg-cream">
+      {/* ═══════════ STICKY NAV ═══════════ */}
+      <nav className="sticky top-0 z-50 bg-dark-bg/95 backdrop-blur-sm border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <Link
+              href="/"
+              className="flex items-center gap-2 text-white/50 text-xs font-bold uppercase tracking-widest hover:text-lime transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Home
+            </Link>
           </div>
-          <span className="font-bold text-gray-900 text-sm">GreenLedger Lite</span>
+          <span className="text-lime font-serif text-xl font-semibold tracking-tight">
+            GreenLedger
+          </span>
+          <span className="text-white/30 text-xs font-bold uppercase tracking-widest hidden sm:block">
+            Calculator
+          </span>
         </div>
-        <span className="ml-auto text-xs text-gray-400 hidden sm:block">
-          Scope 1 &amp; 2 · CBAM Calculator
-        </span>
+      </nav>
+
+      {/* ═══════════ PAGE HEADER ═══════════ */}
+      <header className="bg-dark-bg bg-grid-pattern text-white py-12 md:py-16 px-6 border-b border-white/10">
+        <div className="max-w-5xl mx-auto">
+          <p className="text-lime text-xs font-bold uppercase tracking-[0.2em] mb-3">
+            Carbon Emission Calculator
+          </p>
+          <h1 className="font-serif text-4xl md:text-5xl font-light tracking-architectural leading-[0.95]">
+            Calculate Your Emissions
+          </h1>
+          <p className="text-white/40 text-base mt-4 max-w-2xl">
+            Enter your production data below. All calculations use India-specific IPCC emission
+            factors and state-level CEA grid factors.
+          </p>
+        </div>
       </header>
 
-      {/* Two-column layout */}
-      <main className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-        {/* ── Left panel: Input form ── */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-1">Enter Activity Data</h2>
-          <p className="text-sm text-gray-500 mb-6">
-            Enter your energy consumption manually or upload bills for auto-fill.
-          </p>
+      {/* ═══════════ DATA INPUT SECTION ═══════════ */}
+      <section className="bg-cream py-12 md:py-16 px-6 border-b border-foreground/10">
+        <div className="max-w-5xl mx-auto">
           <InputForm onResult={setResult} />
         </div>
+      </section>
 
-        {/* ── Right panel: Results dashboard ── */}
-        <div className="space-y-4">
+      {/* ═══════════ RESULTS SECTION ═══════════ */}
+      <section className="bg-dark-bg text-white py-12 md:py-16 px-6">
+        <div className="max-w-5xl mx-auto">
           {result === null ? (
             /* Placeholder before first calculation */
-            <div className="flex flex-col items-center justify-center h-full min-h-[400px] rounded-xl border-2 border-dashed border-gray-200 text-center p-10 bg-white">
-              <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
+            <div className="flex flex-col items-center justify-center min-h-[320px] border border-white/10 text-center p-12">
+              <div className="h-16 w-16 border border-white/20 flex items-center justify-center mb-6">
                 <span className="text-3xl">🌿</span>
               </div>
-              <h3 className="font-semibold text-gray-700 mb-2">Results will appear here</h3>
-              <p className="text-sm text-gray-400 max-w-xs">
-                Fill in your energy data on the left and click &ldquo;Calculate Emissions&rdquo; to see
+              <h3 className="font-serif text-2xl font-light text-white/60 mb-3">
+                Results Will Appear Here
+              </h3>
+              <p className="text-white/30 text-sm max-w-md">
+                Fill in your energy data above and click &ldquo;Calculate Emissions&rdquo; to see
                 your Scope 1 &amp; 2 breakdown, carbon intensity, and CBAM status.
               </p>
             </div>
           ) : (
-            <>
+            <div className="space-y-8">
               {/* Summary cards */}
               <EmissionSummary result={result} />
 
-              {/* Donut chart */}
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-                <ScopeDonut result={result} />
+              {/* Donut + Intensity side by side */}
+              <div className="grid md:grid-cols-2 gap-0 border border-white/10">
+                <div className="p-6 md:border-r border-white/10">
+                  <ScopeDonut result={result} />
+                </div>
+                <div className="p-6 border-t md:border-t-0 border-white/10">
+                  <IntensityCard result={result} />
+                </div>
               </div>
-
-              {/* Intensity comparison */}
-              <IntensityCard result={result} />
 
               {/* CBAM badge */}
               <CBAMBadge result={result} />
@@ -81,14 +98,31 @@ export default function CalculatorPage() {
               {/* PDF download */}
               <DownloadButton sessionId={result.session_id} />
 
-              <p className="text-xs text-gray-400 text-center px-4">
-                Calculations use CEA 2022-23, IPCC AR6, and GHG Protocol. Verify with a qualified
-                professional before official CBAM submission.
-              </p>
-            </>
+              {/* Methodology note */}
+              <div className="border-t border-white/10 pt-6">
+                <p className="text-white/20 text-xs uppercase tracking-widest mb-2 font-bold">
+                  Methodology
+                </p>
+                <p className="text-white/30 text-xs leading-relaxed max-w-2xl">
+                  Calculations use India&apos;s Central Electricity Authority (CEA) state-level grid emission
+                  factors and IPCC 2006 combustion emission factors for diesel and LPG. Industry
+                  benchmarks are sourced from EU CBAM Implementing Regulation (EU) 2023/956. Verify
+                  with a qualified professional before official submission.
+                </p>
+              </div>
+            </div>
           )}
         </div>
-      </main>
+      </section>
+
+      {/* ═══════════ FOOTER ═══════════ */}
+      <footer className="bg-dark-bg border-t border-white/10">
+        <div className="bg-lime px-6 py-3">
+          <p className="text-dark-bg text-xs font-semibold text-center tracking-wide">
+            © 2025 GreenLedger Lite. All rights reserved. Built for Indian MSMEs 🇮🇳
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }

@@ -9,24 +9,24 @@ interface CBAMBadgeProps {
 
 const CONFIG = {
   green: {
-    bg:      "bg-green-600",
-    border:  "border-green-700",
+    bg:      "bg-cbam-green",
+    border:  "border-cbam-green",
     Icon:    CheckCircle,
-    title:   "CBAM Ready",
-    subtext: (pct: number) => `Your intensity is ${(100 - pct).toFixed(1)}% below the EU benchmark.`,
+    title:   "COMPLIANT ✓",
+    subtext: (pct: number) => `Your carbon intensity is ${(100 - pct).toFixed(1)}% below the EU benchmark.`,
   },
   yellow: {
-    bg:      "bg-yellow-500",
-    border:  "border-yellow-600",
+    bg:      "bg-cbam-yellow",
+    border:  "border-cbam-yellow",
     Icon:    AlertTriangle,
-    title:   "Near EU Benchmark",
+    title:   "NEAR BENCHMARK ⚠",
     subtext: (pct: number) => `Your intensity is at ${pct}% of the EU benchmark. Improvements recommended.`,
   },
   red: {
-    bg:      "bg-red-600",
-    border:  "border-red-700",
+    bg:      "bg-cbam-red",
+    border:  "border-cbam-red",
     Icon:    XCircle,
-    title:   "Exceeds EU Benchmark",
+    title:   "EXCEEDS BENCHMARK ✗",
     subtext: (pct: number) => `Your intensity is ${pct}% of the EU benchmark. CBAM carbon tax will apply.`,
   },
 }
@@ -37,12 +37,16 @@ export default function CBAMBadge({ result }: CBAMBadgeProps) {
   const { Icon } = cfg
 
   return (
-    <div className={`rounded-lg border-2 ${cfg.bg} ${cfg.border} p-4 text-white`}>
-      <div className="flex items-start gap-3">
-        <Icon className="h-6 w-6 mt-0.5 flex-shrink-0" />
+    <div className={`border-2 ${cfg.border} ${cfg.bg} p-6 text-white`}>
+      <div className="flex items-start gap-4">
+        <Icon className="h-7 w-7 mt-0.5 flex-shrink-0" />
         <div>
-          <p className="font-bold text-lg leading-tight">{cfg.title}</p>
-          <p className="text-sm opacity-90 mt-0.5">{cfg.subtext(percent_vs_benchmark)}</p>
+          <p className="font-bold text-xl uppercase tracking-wide leading-tight">
+            {cfg.title}
+          </p>
+          <p className="text-sm opacity-90 mt-1">
+            {cfg.subtext(percent_vs_benchmark)}
+          </p>
         </div>
       </div>
     </div>

@@ -47,14 +47,14 @@ export default function FileUpload({ documentType, label, onExtracted }: FileUpl
   }
 
   const borderColor =
-    state === "success" ? "border-green-400 bg-green-50" :
-    state === "error"   ? "border-red-400 bg-red-50"   :
-                          "border-dashed border-gray-300 hover:border-green-400 hover:bg-green-50"
+    state === "success" ? "border-cbam-green bg-cbam-green/5"  :
+    state === "error"   ? "border-cbam-red bg-cbam-red/5"      :
+                          "border-dashed border-foreground/20 hover:border-lime hover:bg-lime/5"
 
   return (
-    <div className="mt-1">
+    <div className="mt-2">
       <div
-        className={`relative flex flex-col items-center justify-center rounded-md border-2 px-4 py-3 cursor-pointer transition-colors ${borderColor}`}
+        className={`relative flex flex-col items-center justify-center border px-4 py-3 cursor-pointer transition-colors ${borderColor}`}
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
         onClick={() => fileInputRef.current?.click()}
@@ -68,16 +68,16 @@ export default function FileUpload({ documentType, label, onExtracted }: FileUpl
         />
 
         {state === "uploading" ? (
-          <Loader2 className="h-5 w-5 animate-spin text-green-600" />
+          <Loader2 className="h-4 w-4 animate-spin text-lime" />
         ) : state === "success" ? (
-          <CheckCircle className="h-5 w-5 text-green-600" />
+          <CheckCircle className="h-4 w-4 text-cbam-green" />
         ) : state === "error" ? (
-          <AlertCircle className="h-5 w-5 text-red-500" />
+          <AlertCircle className="h-4 w-4 text-cbam-red" />
         ) : (
-          <Upload className="h-5 w-5 text-gray-400" />
+          <Upload className="h-4 w-4 text-foreground/30" />
         )}
 
-        <span className="mt-1 text-xs text-center text-gray-500">
+        <span className="mt-1 text-xs text-center text-foreground/40">
           {state === "uploading"
             ? "Extracting data…"
             : state === "success"

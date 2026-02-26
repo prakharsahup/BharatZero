@@ -2,7 +2,7 @@
 
 > An AI-powered Scope 1 & 2 carbon reporting tool that helps Indian MSMEs calculate their embedded carbon emissions and check CBAM compliance — built for a 48-hour hackathon.
 
-**Pitch line:** *"We automated CBAM carbon reporting for Indian exporters. Upload your electricity bill and diesel invoice. Get a compliance-ready report in 60 seconds."*
+**Pitch line:** _"We automated CBAM carbon reporting for Indian exporters. Upload your electricity bill and diesel invoice. Get a compliance-ready report in 60 seconds."_
 
 ---
 
@@ -22,7 +22,7 @@
 - [Environment Variables](#environment-variables)
 - [Installation & Setup](#installation--setup)
 - [Deployment](#deployment)
-- [48-Hour Build Plan](#48-hour-build-plan)
+- [48-Hour Build Plan](#48-hour-build-plan)Fin
 - [Pitch Strategy](#pitch-strategy)
 - [Roadmap Post-Hackathon](#roadmap-post-hackathon)
 
@@ -63,12 +63,12 @@ These are Phase 2. Judges want a **working demo**, not enterprise architecture.
 
 ## Problem Statement
 
-| Reality | Impact |
-|---------|--------|
-| EU CBAM came into full effect January 2026 | Indian exporters of steel, cement, aluminium must report embedded carbon or face border tax |
-| Average MSME has zero carbon accounting capability | They lose EU contracts or pay carbon surcharges |
-| Consultants charge Rs 3-10 lakh/year for this | Unaffordable for 90% of MSMEs |
-| No India-localized tool exists | Global tools lack CEA state-wise grid factors or GST invoice formats |
+| Reality                                            | Impact                                                                                      |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| EU CBAM came into full effect January 2026         | Indian exporters of steel, cement, aluminium must report embedded carbon or face border tax |
+| Average MSME has zero carbon accounting capability | They lose EU contracts or pay carbon surcharges                                             |
+| Consultants charge Rs 3-10 lakh/year for this      | Unaffordable for 90% of MSMEs                                                               |
+| No India-localized tool exists                     | Global tools lack CEA state-wise grid factors or GST invoice formats                        |
 
 **Our answer:** A simple calculator + report generator that costs a fraction of a consultant and takes 60 seconds.
 
@@ -176,34 +176,37 @@ User confirms values and submits
 ## Tech Stack
 
 ### Frontend
-| Technology | Purpose |
-|-----------|---------|
-| Next.js 14 | React framework with SSR |
-| TypeScript | Type safety |
-| Tailwind CSS | Utility-first styling |
-| shadcn/ui | Prebuilt accessible components |
-| Recharts | Donut chart and bar chart |
-| React Hook Form | Form state management |
-| Axios | API calls to backend |
+
+| Technology      | Purpose                        |
+| --------------- | ------------------------------ |
+| Next.js 14      | React framework with SSR       |
+| TypeScript      | Type safety                    |
+| Tailwind CSS    | Utility-first styling          |
+| shadcn/ui       | Prebuilt accessible components |
+| Recharts        | Donut chart and bar chart      |
+| React Hook Form | Form state management          |
+| Axios           | API calls to backend           |
 
 ### Backend
-| Technology | Purpose |
-|-----------|---------|
-| Python 3.11 | Language |
-| FastAPI | Async REST API |
-| SQLAlchemy | ORM (SQLite + PostgreSQL compatible) |
-| Pydantic v2 | Request/response validation |
-| ReportLab | PDF generation |
-| pytesseract | OCR for bill images |
-| PyMuPDF | Convert PDF pages to images for OCR |
-| Anthropic Claude API | LLM structured data extraction |
-| python-multipart | File upload handling |
+
+| Technology           | Purpose                              |
+| -------------------- | ------------------------------------ |
+| Python 3.11          | Language                             |
+| FastAPI              | Async REST API                       |
+| SQLAlchemy           | ORM (SQLite + PostgreSQL compatible) |
+| Pydantic v2          | Request/response validation          |
+| ReportLab            | PDF generation                       |
+| pytesseract          | OCR for bill images                  |
+| PyMuPDF              | Convert PDF pages to images for OCR  |
+| Anthropic Claude API | LLM structured data extraction       |
+| python-multipart     | File upload handling                 |
 
 ### Hosting (All Free Tier)
-| Service | Use |
-|---------|-----|
-| Vercel | Frontend (Next.js) |
-| Railway | Backend (FastAPI) |
+
+| Service  | Use                                          |
+| -------- | -------------------------------------------- |
+| Vercel   | Frontend (Next.js)                           |
+| Railway  | Backend (FastAPI)                            |
 | Supabase | PostgreSQL (optional, SQLite works for demo) |
 
 ---
@@ -438,6 +441,7 @@ Three endpoints. That is the entire backend.
 ### POST /api/calculate
 
 Request:
+
 ```json
 {
   "company_name": "ABC Steel Works",
@@ -451,6 +455,7 @@ Request:
 ```
 
 Response:
+
 ```json
 {
   "session_id": "uuid-here",
@@ -474,10 +479,12 @@ Response:
 ### POST /api/extract
 
 Request: `multipart/form-data`
+
 - `file`: PDF or image of bill
 - `document_type`: `"electricity_bill"` or `"diesel_invoice"`
 
 Response:
+
 ```json
 {
   "document_type": "electricity_bill",
@@ -495,6 +502,7 @@ Response:
 ### POST /api/report
 
 Request:
+
 ```json
 { "session_id": "uuid-here" }
 ```
@@ -506,6 +514,7 @@ Response: `application/pdf` binary — triggers file download in browser.
 ## Frontend Pages & Components
 
 ### Page 1 — Landing (`/`)
+
 - Headline: "CBAM Carbon Report in 60 Seconds"
 - Three key points: what it does, who it helps, why it matters
 - Single CTA button: "Start Calculating"
@@ -514,6 +523,7 @@ Response: `application/pdf` binary — triggers file download in browser.
 ### Page 2 — Calculator (`/calculator`)
 
 Left panel (inputs):
+
 ```
 Company Name         [________________]
 Industry             [Steel          v]
@@ -534,6 +544,7 @@ Tonnes produced      [________________]
 ```
 
 Right panel (results, shown after calculation):
+
 ```
 Total: 11.72 tCO2e    Scope 1: 1.55    Scope 2: 10.17
 
@@ -582,6 +593,7 @@ Only three variables needed to run locally. No cloud credentials required for th
 ## Installation & Setup
 
 ### Prerequisites
+
 - Python 3.11+
 - Node.js 18+
 - Anthropic API key (only needed if testing OCR extraction)
@@ -662,6 +674,7 @@ npx vercel deploy --prod
 5. Railway reads `Procfile` and deploys automatically
 
 **Procfile:**
+
 ```
 web: uvicorn app.main:app --host 0.0.0.0 --port $PORT
 ```
@@ -673,6 +686,7 @@ Total deployment time: under 10 minutes.
 ## 48-Hour Build Plan
 
 ### Day 1 Morning — Core Logic (4 hours)
+
 - Set up FastAPI project skeleton
 - Write emission_factors.py with all hardcoded values
 - Write calculator.py with Scope 1, Scope 2, intensity, CBAM check
@@ -681,6 +695,7 @@ Total deployment time: under 10 minutes.
 - Set up SQLite model and session
 
 ### Day 1 Afternoon — Frontend Base (4 hours)
+
 - Set up Next.js project with Tailwind + shadcn
 - Build InputForm.tsx with all fields
 - Connect to POST /api/calculate
@@ -689,6 +704,7 @@ Total deployment time: under 10 minutes.
 - Build CBAMBadge component
 
 ### Day 1 Evening — PDF + Full Flow (2 hours)
+
 - Write pdf_generator.py using ReportLab
 - Wire up POST /api/report endpoint
 - Build DownloadButton component
@@ -696,6 +712,7 @@ Total deployment time: under 10 minutes.
 - Do an end-to-end test: enter data, calculate, download PDF
 
 ### Day 2 Morning — OCR Feature (3 hours)
+
 - Write ocr_service.py using pytesseract
 - Write llm_service.py with Claude extraction prompt
 - Wire up POST /api/extract
@@ -703,6 +720,7 @@ Total deployment time: under 10 minutes.
 - Test with a real sample electricity bill
 
 ### Day 2 Afternoon — Polish + Deploy (3 hours)
+
 - Add benchmark comparison visual
 - Build landing page
 - Add loading spinners and error states
@@ -711,6 +729,7 @@ Total deployment time: under 10 minutes.
 - Run full demo rehearsal twice
 
 ### What to cut if running behind
+
 - OCR upload feature — replace with manual entry only (still demonstrates core value)
 - PDF visual polish — plain text PDF is fine if the data is correct
 - Benchmark bar chart — show as a text comparison instead
@@ -725,11 +744,13 @@ Total deployment time: under 10 minutes.
 "Indian MSMEs exporting steel, cement, and aluminium to the EU now face the CBAM carbon border tax. The problem: they have no way to calculate their embedded carbon. Consultants charge Rs 3-10 lakh a year. We built GreenLedger Lite. Upload your electricity bill and diesel invoice. In 60 seconds you get your Scope 1 and Scope 2 emissions, your carbon intensity compared to the EU benchmark, and a CBAM-ready PDF report. Scope 3 and multi-regulation support is Phase 2."
 
 ### What not to say
+
 - Do not mention microservices, knowledge graphs, or async queues
 - Do not say "we are building a full ESG platform"
 - Do not apologize for missing features — emphasize what works
 
 ### Demo script
+
 1. Open the calculator page
 2. Drop a real electricity bill into the upload zone — watch the kWh auto-fill
 3. Enter diesel liters manually: 580
@@ -745,18 +766,21 @@ Total deployment time: under 10 minutes.
 This build proves the core value proposition. After validation:
 
 **Phase 2 — Product (Month 1-3)**
+
 - User authentication (Supabase Auth)
 - Multi-month tracking and trend charts
 - BRSR compliance checklist
 - Scope 3 transport emissions (freight invoices)
 
 **Phase 3 — Scale (Month 4-6)**
+
 - Supplier portal for Scope 3 data
 - CBAM XML export format
 - GST invoice parser
 - Regional language support (Tamil, Gujarati, Marathi)
 
 **Phase 4 — Moat (Month 7-12)**
+
 - Carbon credit eligibility assessment
 - Green financing readiness report
 - White-label version for sustainability consultants
@@ -770,4 +794,4 @@ Emission calculations use standard factors from CEA 2022-23, IPCC AR6, and GHG P
 
 ---
 
-*Built in 48 hours. Solves a Rs 10,000 crore compliance gap.*
+_Built in 48 hours. Solves a Rs 10,000 crore compliance gap._

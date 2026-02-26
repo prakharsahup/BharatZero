@@ -1,127 +1,291 @@
 import Link from "next/link"
-import { ArrowRight, FileText, Zap, Shield } from "lucide-react"
+import { ArrowRight, Zap, Shield, FileText, BarChart3, MapPin, Factory } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-const FEATURES = [
+const PAIN_POINTS = [
   {
-    Icon:  Zap,
-    title: "60-Second Report",
-    desc:  "Upload your electricity bill and diesel invoice. Our AI extracts the data and calculates your carbon footprint instantly.",
+    number: "01",
+    title: "Complex EU Regulations",
+    desc: "The EU CBAM regulation is 200+ pages of technical requirements. Most MSMEs don't have the bandwidth to decode it.",
   },
   {
-    Icon:  Shield,
-    title: "CBAM Compliance Check",
-    desc:  "Instantly compare your carbon intensity against EU benchmarks for steel, aluminium, cement, and more.",
+    number: "02",
+    title: "Expensive Consultants",
+    desc: "Carbon consultants charge ₹3–10 lakh per year. For small exporters, that's margin-destroying overhead.",
   },
   {
-    Icon:  FileText,
-    title: "Download PDF Report",
-    desc:  "Get a CBAM-ready compliance report with Scope 1 & 2 breakdown, carbon intensity, and EU benchmark comparison.",
+    number: "03",
+    title: "No Simple Tools",
+    desc: "90% of Indian MSMEs lack access to affordable, self-service carbon calculation tools built for their context.",
   },
 ]
 
-const PROBLEM_STATS = [
-  { stat: "Full effect",   desc: "EU CBAM January 2026"        },
-  { stat: "₹3–10 lakh",   desc: "Consultant fee per year"      },
-  { stat: "90%",           desc: "MSMEs lack carbon tools"      },
-  { stat: "60 seconds",   desc: "Time to your report"          },
+const STEPS = [
+  {
+    number: "01",
+    title: "Enter Your Data",
+    desc: "Input your electricity consumption (kWh), diesel usage (liters), LPG (optional), and production output in tonnes.",
+  },
+  {
+    number: "02",
+    title: "Instant Calculation",
+    desc: "Scope 1 & Scope 2 emissions computed using India-specific CEA grid factors and IPCC AR6 combustion factors.",
+  },
+  {
+    number: "03",
+    title: "Get Your Report",
+    desc: "See your compliance status, benchmark comparison, Scope breakdown chart, and download a CBAM-ready PDF report.",
+  },
+]
+
+const FEATURES = [
+  {
+    Icon: MapPin,
+    title: "India-Specific Emission Factors",
+    desc: "State-wise grid emission factors from CEA 2022-23 data for accurate Scope 2 calculations.",
+  },
+  {
+    Icon: Factory,
+    title: "5 Industries Covered",
+    desc: "Steel, Aluminium, Cement, Textile, and Chemicals — the sectors most impacted by EU CBAM.",
+  },
+  {
+    Icon: Shield,
+    title: "EU Benchmark Comparison",
+    desc: "Real-time comparison against official EU CBAM industry benchmarks for compliance verification.",
+  },
+  {
+    Icon: BarChart3,
+    title: "Visual Breakdown",
+    desc: "Interactive donut chart showing Scope 1 vs Scope 2 emission breakdown at a glance.",
+  },
+  {
+    Icon: FileText,
+    title: "PDF Report Generation",
+    desc: "Download a compliance-ready documentation package suitable for EU CBAM reporting requirements.",
+  },
+  {
+    Icon: Zap,
+    title: "100% Free & Private",
+    desc: "No login required, no data stored, no tracking. Single-session usage designed for privacy.",
+  },
 ]
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Nav */}
-      <nav className="border-b border-gray-100 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center">
-            <span className="text-white text-xs font-bold">GL</span>
+    <div className="min-h-screen">
+      {/* ═══════════ STICKY NAVBAR ═══════════ */}
+      <nav className="sticky top-0 z-50 bg-dark-bg/95 backdrop-blur-sm border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <span className="text-lime font-serif text-xl font-semibold tracking-tight">
+            GreenLedger
+          </span>
+          <div className="hidden md:flex items-center gap-8">
+            <a href="#about" className="text-white/70 text-xs font-bold uppercase tracking-widest hover:text-lime transition-colors">
+              About
+            </a>
+            <a href="#how-it-works" className="text-white/70 text-xs font-bold uppercase tracking-widest hover:text-lime transition-colors">
+              How It Works
+            </a>
+            <a href="#features" className="text-white/70 text-xs font-bold uppercase tracking-widest hover:text-lime transition-colors">
+              Features
+            </a>
+            <Link href="/calculator">
+              <Button variant="outline-dark" size="sm">
+                Start Calculating
+              </Button>
+            </Link>
           </div>
-          <span className="font-bold text-gray-900">GreenLedger Lite</span>
+          {/* Mobile CTA */}
+          <Link href="/calculator" className="md:hidden">
+            <Button variant="outline-dark" size="sm">
+              Calculate
+            </Button>
+          </Link>
         </div>
-        <Link href="/calculator">
-          <Button size="sm">Start Calculating</Button>
-        </Link>
       </nav>
 
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-green-700 to-green-900 text-white py-20 px-6 text-center">
-        <p className="text-green-300 text-sm font-semibold uppercase tracking-widest mb-4">
-          EU CBAM Compliance Tool for Indian Exporters
-        </p>
-        <h1 className="text-4xl md:text-5xl font-extrabold leading-tight max-w-3xl mx-auto">
-          CBAM Carbon Report<br />in 60 Seconds
-        </h1>
-        <p className="mt-6 text-lg text-green-100 max-w-2xl mx-auto">
-          Upload your electricity bill and diesel invoice. Get your Scope 1 &amp; 2 emissions,
-          EU CBAM compliance status, and a downloadable PDF report — instantly.
-        </p>
-        <Link href="/calculator" className="mt-8 inline-block">
-          <Button size="lg" className="bg-white text-green-800 hover:bg-green-50 text-base px-8">
-            Start Calculating
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-        </Link>
-        <p className="mt-4 text-sm text-green-300">
-          No login. No consultant. Free for Indian MSMEs.
-        </p>
-      </section>
-
-      {/* Problem stats */}
-      <section className="py-12 px-6 bg-gray-50">
-        <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          {PROBLEM_STATS.map((item) => (
-            <div key={item.stat}>
-              <p className="text-2xl font-extrabold text-green-700">{item.stat}</p>
-              <p className="text-sm text-gray-600 mt-1">{item.desc}</p>
-            </div>
-          ))}
+      {/* ═══════════ HERO SECTION ═══════════ */}
+      <section className="bg-dark-bg bg-grid-pattern text-white py-24 md:py-32 px-6">
+        <div className="max-w-5xl mx-auto text-center">
+          <p className="text-lime text-xs font-bold uppercase tracking-[0.2em] mb-6">
+            EU CBAM Compliance Tool for Indian Exporters
+          </p>
+          <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-light leading-[0.95] tracking-tightest mb-8">
+            Know Your Carbon.
+            <br />
+            <span className="text-lime">Own Your Compliance.</span>
+          </h1>
+          <p className="text-white/60 text-lg md:text-xl max-w-2xl mx-auto mb-10 font-light">
+            The simplest way for Indian exporters to calculate CBAM emissions, check EU
+            compliance, and generate audit-ready reports — in minutes.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="/calculator">
+              <Button variant="lime" size="xl">
+                Launch Calculator
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+            <a href="#how-it-works">
+              <Button variant="outline-dark" size="xl">
+                Learn How It Works
+              </Button>
+            </a>
+          </div>
+          <p className="mt-6 text-white/30 text-sm">
+            No login · No consultant · Free for Indian MSMEs
+          </p>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-16 px-6">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-center text-gray-900 mb-12">
-            Everything an MSME needs for CBAM
+      {/* ═══════════ PROBLEM STATEMENT ═══════════ */}
+      <section id="about" className="bg-cream py-20 md:py-28 px-6 border-t border-foreground/10">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-sage text-xs font-bold uppercase tracking-[0.2em] mb-4">
+            The Challenge
+          </p>
+          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-light tracking-architectural text-dark-bg mb-16">
+            CBAM Is Here.<br />Are You Ready?
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {FEATURES.map(({ Icon, title, desc }) => (
+          <div className="grid md:grid-cols-3 gap-0">
+            {PAIN_POINTS.map((point, i) => (
               <div
-                key={title}
-                className="rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                key={point.number}
+                className={`py-8 md:py-0 md:px-8 ${
+                  i > 0 ? "border-t md:border-t-0 md:border-l border-foreground/10" : ""
+                }`}
               >
-                <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center mb-4">
-                  <Icon className="h-5 w-5 text-green-700" />
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">{title}</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">{desc}</p>
+                <span className="font-serif text-5xl font-light text-sage/60 block mb-4">
+                  {point.number}
+                </span>
+                <h3 className="text-lg font-bold text-dark-bg mb-2 uppercase tracking-wide">
+                  {point.title}
+                </h3>
+                <p className="text-foreground/60 text-sm leading-relaxed">
+                  {point.desc}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 px-6 bg-green-700 text-white text-center">
-        <h2 className="text-2xl font-bold mb-3">Ready to check your CBAM compliance?</h2>
-        <p className="text-green-200 mb-8 max-w-xl mx-auto">
-          The consultant quoted ₹4 lakh. This takes 45 seconds and is free.
-        </p>
-        <Link href="/calculator">
-          <Button size="lg" className="bg-white text-green-800 hover:bg-green-50 px-10">
-            Calculate My Emissions
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-        </Link>
+      {/* ═══════════ HOW IT WORKS ═══════════ */}
+      <section id="how-it-works" className="bg-dark-bg text-white py-20 md:py-28 px-6 border-t border-white/10">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-lime text-xs font-bold uppercase tracking-[0.2em] mb-4">
+            How It Works
+          </p>
+          <h2 className="font-serif text-4xl md:text-5xl font-light tracking-architectural text-white mb-16">
+            Three Steps to Compliance
+          </h2>
+          <div className="grid md:grid-cols-3 gap-0">
+            {STEPS.map((step, i) => (
+              <div
+                key={step.number}
+                className={`py-8 md:py-0 md:px-8 ${
+                  i > 0 ? "border-t md:border-t-0 md:border-l border-white/10" : ""
+                }`}
+              >
+                <span className="font-serif text-6xl md:text-7xl font-light text-lime/30 block mb-4">
+                  {step.number}
+                </span>
+                <h3 className="text-lg font-bold uppercase tracking-wide mb-3">
+                  {step.title}
+                </h3>
+                <p className="text-white/50 text-sm leading-relaxed">
+                  {step.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-100 py-6 px-6 text-center text-xs text-gray-400">
-        <p>
-          GreenLedger Lite uses CEA 2022-23 grid factors, IPCC AR6 combustion factors, and GHG Protocol.
-          Reports are AI-assisted drafts — verify with a qualified professional before official submission.
-        </p>
-        <p className="mt-2">Built in 48 hours · Solves a ₹10,000 crore compliance gap.</p>
+      {/* ═══════════ KEY FEATURES ═══════════ */}
+      <section id="features" className="bg-cream py-20 md:py-28 px-6 border-t border-foreground/10">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-sage text-xs font-bold uppercase tracking-[0.2em] mb-4">
+            Features
+          </p>
+          <h2 className="font-serif text-4xl md:text-5xl font-light tracking-architectural text-dark-bg mb-16">
+            Built for Indian Exporters
+          </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-0">
+            {FEATURES.map(({ Icon, title, desc }, i) => (
+              <div
+                key={title}
+                className="p-8 border border-foreground/8 hover:bg-sage/10 transition-colors group"
+              >
+                <div className="h-10 w-10 border border-foreground/20 flex items-center justify-center mb-5 group-hover:border-lime group-hover:bg-lime/10 transition-colors">
+                  <Icon className="h-5 w-5 text-foreground/60 group-hover:text-lime transition-colors" />
+                </div>
+                <h3 className="font-bold text-dark-bg mb-2 uppercase tracking-wide text-sm">
+                  {title}
+                </h3>
+                <p className="text-foreground/50 text-sm leading-relaxed">
+                  {desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ CTA SECTION ═══════════ */}
+      <section className="bg-sage py-20 md:py-28 px-6 border-t border-foreground/10">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="font-serif text-4xl md:text-5xl font-light tracking-architectural text-dark-bg mb-8">
+            Start Your CBAM
+            <br />
+            Compliance Check
+          </h2>
+          <p className="text-dark-bg/60 text-base max-w-xl mx-auto mb-10">
+            The consultant quoted ₹4 lakh. This takes 60 seconds and is free.
+          </p>
+          <Link href="/calculator">
+            <Button variant="default" size="xl" className="bg-dark-bg text-white border-dark-bg hover:bg-lime hover:text-dark-bg">
+              Open Calculator
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
+        </div>
+      </section>
+
+      {/* ═══════════ FOOTER ═══════════ */}
+      <footer className="bg-dark-bg text-white border-t border-white/10">
+        <div className="max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-8 items-start">
+          <div>
+            <span className="text-lime font-serif text-lg font-semibold">GreenLedger Lite</span>
+            <p className="text-white/30 text-xs mt-2 leading-relaxed">
+              CBAM Carbon Calculator for Indian MSMEs.
+              <br />
+              Uses CEA 2022-23, IPCC AR6, GHG Protocol.
+            </p>
+          </div>
+          <div className="flex gap-8">
+            <div className="space-y-2">
+              <a href="#about" className="block text-white/50 text-xs uppercase tracking-widest hover:text-lime transition-colors">About</a>
+              <a href="#how-it-works" className="block text-white/50 text-xs uppercase tracking-widest hover:text-lime transition-colors">How It Works</a>
+              <a href="#features" className="block text-white/50 text-xs uppercase tracking-widest hover:text-lime transition-colors">Features</a>
+            </div>
+            <div className="space-y-2">
+              <Link href="/calculator" className="block text-white/50 text-xs uppercase tracking-widest hover:text-lime transition-colors">Calculator</Link>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-white/50 text-xs uppercase tracking-widest">
+              Made for Indian MSMEs 🇮🇳
+            </p>
+          </div>
+        </div>
+        {/* Neon lime copyright bar */}
+        <div className="bg-lime px-6 py-3">
+          <p className="text-dark-bg text-xs font-semibold text-center tracking-wide">
+            © 2025 GreenLedger Lite. All rights reserved. Reports are AI-assisted drafts — verify with a qualified professional.
+          </p>
+        </div>
       </footer>
     </div>
   )
