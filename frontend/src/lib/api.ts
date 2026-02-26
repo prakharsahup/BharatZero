@@ -33,3 +33,23 @@ export async function downloadReport(sessionId: string): Promise<Blob> {
   )
   return data
 }
+
+import { supabase } from "./supabaseClient";
+
+export async function callBackend(endpoint: string) {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    throw new Error("User not logged in");
+  }
+
+  const res = await fetch(`http://localhost:8000${endpoint}`, {
+    headers: {
+      Authorization: `Bearer ${session.access_token}`,
+    },
+  });
+
+  return res.json();
+}

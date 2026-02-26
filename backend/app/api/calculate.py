@@ -1,6 +1,6 @@
 import json
 import uuid
-
+from app.core.deps import get_current_user
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -11,9 +11,25 @@ from app.models.calculation import Calculation, get_db
 
 router = APIRouter()
 
+@router.get("/my-calculations")
+def get_my_calculations(
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
+):
+    records = (
+        db.query(Calculation)
+        .filter(Calculation.user_id == user["sub"])   
+        .all()
+    )
+
+    return records
 
 @router.post("/calculate", response_model=CalculationResult)
-def calculate_emissions(payload: CalculationInput, db: Session = Depends(get_db)):
+def calculate_emissions(
+    payload: CalculationInput,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)   # ✅ ADD
+):
     """
     Accept manual emission inputs, run Scope 1 + Scope 2 calculation,
     persist result, and return CBAM compliance summary.
@@ -44,6 +60,7 @@ def calculate_emissions(payload: CalculationInput, db: Session = Depends(get_db)
         total_tco2e=result["total_tco2e"],
         intensity=result["intensity"],
         cbam_status=json.dumps(result["cbam_status"]),
+        user_id=user["sub"]
     )
     db.add(calc)
     db.commit()

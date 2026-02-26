@@ -3,10 +3,8 @@ from sqlalchemy import Column, Integer, String, Float, DateTime, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 from app.config import settings
 
-
 engine = create_engine(
     settings.database_url,
-    # Required for SQLite — not needed for PostgreSQL
     connect_args={"check_same_thread": False} if "sqlite" in settings.database_url else {},
 )
 
@@ -19,6 +17,7 @@ class Calculation(Base):
 
     id                = Column(Integer, primary_key=True, autoincrement=True)
     session_id        = Column(String, nullable=False, index=True)
+    user_id           = Column(String, nullable=True, index=True)   
     company_name      = Column(String, nullable=True)
     industry          = Column(String, nullable=True)
     state             = Column(String, nullable=True)
@@ -30,7 +29,7 @@ class Calculation(Base):
     scope2_kg_co2e    = Column(Float, nullable=True)
     total_tco2e       = Column(Float, nullable=True)
     intensity         = Column(Float, nullable=True)
-    cbam_status       = Column(String, nullable=True)   # stored as JSON string
+    cbam_status       = Column(String, nullable=True)
     created_at        = Column(DateTime, default=datetime.utcnow)
 
 
