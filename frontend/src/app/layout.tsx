@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Inter, Playfair_Display } from "next/font/google"
 import "./globals.css"
+import Providers from "./providers"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -14,7 +15,7 @@ const playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
-  title:       "GreenLedger Lite — CBAM Carbon Calculator for Indian Exporters",
+  title:       "BharatZero — CBAM Carbon Calculator for Indian Exporters",
   description: "Calculate your Scope 1 & 2 carbon emissions and check EU CBAM compliance in 60 seconds. Built for Indian MSMEs.",
 }
 
@@ -22,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   )
