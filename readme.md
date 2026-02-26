@@ -795,3 +795,4 @@ Emission calculations use standard factors from CEA 2022-23, IPCC AR6, and GHG P
 ---
 
 _Built in 48 hours. Solves a Rs 10,000 crore compliance gap._
+# BharatZero
